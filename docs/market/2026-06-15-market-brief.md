@@ -136,7 +136,8 @@
 
 **Recommendation: Lead with Pillar B (AI red-teaming/assurance) now; build Pillar A in parallel but don't lead marketing with it yet.**
 
-**Why**: 
+**Why**:
+
 - Pillar B has a faster land motion (pip install → CI gate in <1 day) with less integration debt than a full SOC deployment.
 - EU AI Act Aug 2026 enforcement is a hard deadline creating urgency for AI red-team compliance evidence NOW.
 - Pillar B competitors are fragmented and no one has the grounded/abstention design; the gap is widest there.
@@ -151,6 +152,7 @@
 > These are proposals; see `examples/proposal_7*.py` for the runnable stubs.
 
 ### Example 1 — SOC Alert Triage with SIEM-Grounded Verdicts (Pillar A)
+
 **File**: `examples/proposal_76_soc_alert_triage.py`  
 **Target**: `Target.from_callable(mock_siem_agent)` or `Target.endpoint("https://siem-host/api/chat")`  
 **Jobs**: `create_soc_analyst`, `security_toolset(siem=True, edr=True, threat_intel=True)`, `ground_report`  
@@ -159,6 +161,7 @@
 **Why not a toy**: Real SOC pain is false-positive verdicts. The demo surfaces that a commodity LLM agent would emit 4 findings; `ground_report` downgrades 1 to an `Abstention` because evidence was absent. This is the single clearest demo of the SDK's differentiation.
 
 ### Example 2 — RAG Customer-Support Bot: Indirect Injection + Data Exfil Red Team (Pillar B)
+
 **File**: `examples/proposal_77_rag_red_team_ci.py`  
 **Target**: `Target.endpoint("https://staging.support-bot.example/chat", prompt_field="message", response_path="response")`  
 **Jobs**: `red_team(target, probes=[IndirectPromptInjection(), SensitiveInformationDisclosure()])`, `AuditTrail`  
@@ -167,6 +170,7 @@
 **Why not a toy**: Indirect injection in RAG is the #1 real attack on deployed AI systems (73% prevalence per OWASP 2025). This is the demo that maps directly to the EU AI Act red-teaming requirement.
 
 ### Example 3 — assure() Guardrail Coverage Gate for CI/CD (Pillar B)
+
 **File**: `examples/proposal_78_guardrail_coverage_gate.py`  
 **Target**: `Target.from_callable(model_under_test)` — swapped for `Target.endpoint(staging_url)` in real CI  
 **Jobs**: `assure(target, suite="owasp-asi")`, `is_finding`, threshold check  
@@ -175,6 +179,7 @@
 **Why not a toy**: This is the direct answer to the AppSec buyer's "fail the PR" requirement. One import, one function call, exit code. Integrates into any CI in <10 lines. The EU AI Act compliance motion: run this before every production deploy and store the `AuditTrail` JSONL as compliance evidence.
 
 ### Example 4 — Model & Hardware Fingerprinting via Timing Side-Channels (Pillar B)
+
 **File**: `examples/proposal_79_model_fingerprint.py`  
 **Target**: `Target.endpoint("https://vendor-inference-api.example/v1/completions")`  
 **Jobs**: `measure_endpoint_timing`, `FEATURE_KEYS`, `default_classifier`, `fingerprint_to_finding`, `ground_fingerprint`, `AuditTrail`  
@@ -183,6 +188,7 @@
 **Why not a toy**: Model/hardware provenance is a real procurement risk. Timing fingerprinting is the only non-intrusive signal available to a buyer. This is the only open-source tool in this space; existing alternatives are proprietary or require white-box access.
 
 ### Example 5 — IR with Tamper-Evident Audit Chain (Pillar A)
+
 **File**: `examples/proposal_80_ir_audit_trail.py`  
 **Target**: Implicit — the `SecureAgent` is the responder, not the target under test  
 **Jobs**: `secure_agent`, `SecurityProfile`, `AuditTrail`, `AuditHook`, `nist_800_61_ir`, `security_toolset(allow_containment=True)`, `AuditTrail.export_jsonl()`  
@@ -195,14 +201,17 @@
 ## 7  TOP 3 RECOMMENDED ACTIONS THIS WEEK
 
 ### 1. Ship the assure() CI Gate example (Proposal 78) as the primary landing experience
+
 **Why now**: It has the shortest time-to-value of any example (pip install → one function call → CI pass/fail). It directly answers the EU AI Act compliance urgency (enforcement Aug 2026). It is zero-integration-debt for an AppSec buyer. Make it the README example, not the agent red-team notebook.  
 **Specifically**: Promote `proposal_78_guardrail_coverage_gate.py` to a first-class `examples/ci_gate.py` once vetted, and add a GitHub Actions workflow stub.
 
 ### 2. Run 3 buyer interviews in the next 7 days targeting AI Platform / AppSec engineers
+
 **Why now**: The positioning question (lead Pillar B, abstain messaging resonance) is a hypothesis. The cheapest way to validate it is 20-minute calls with 3 real buyers. Target: (a) an AppSec engineer at a company with >1 deployed LLM in production; (b) an AI Platform lead at a SaaS company subject to EU AI Act; (c) a CISO at a mid-enterprise with a 10-person SOC. Ask: "What does your current LLM red-team process look like and what does a failing report cost you?"  
 **Expected output**: 3 call notes; go/no-go on Pillar B lead positioning; test one of the three one-liners from Section 5.
 
 ### 3. File the EU AI Act compliance angle as the PR narrative for the CI gate
+
 **Why now**: GPAI enforcement begins Aug 2, 2026 — less than 7 weeks away. This is a forcing function that creates urgency, not FUD. The combination of `assure()` + `AuditTrail.export_jsonl()` is the only open-source tool that produces machine-verifiable adversarial test evidence against OWASP ASI / MITRE ATLAS taxonomy. Write a 400-word blog post (or GitHub Discussion) framing this as a compliance checklist. Time-to-publish: 2 days.
 
 ---
